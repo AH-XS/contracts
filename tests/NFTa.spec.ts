@@ -44,8 +44,8 @@ describe("ERC721a", () => {
     expect(total === ethers.utils.parseEther("5"));
   });
 
-  it("Should return the owner of an indexed token", async () => {
-    const tokenOwner = await token.getOwnershipAt(4);
-    expect(tokenOwner.toString() === user.address);
-  });
+  // it("Should return the owner of an indexed token", async () => {
+  //   const tokenOwner = await token.getOwnershipAt(4);
+  //   expect(tokenOwner.toString() === user.address);
+  // });
 });

@@ -18,13 +18,13 @@ contract NFTa is ERC721A, ERC721ABurnable {
         _safeMint(to, quantity);
     }
 
-    function getOwnershipAt(uint256 index)
-        public
-        view
-        returns (TokenOwnership memory)
-    {
-        return _ownerships[index];
-    }
+    // function getOwnershipAt(uint256 index)
+    //     public
+    //     view
+    //     returns (TokenOwnership memory)
+    // {
+    //     return _ownershipAt[index];
+    // }
 
     function totalMinted() public view returns (uint256) {
         return _totalMinted();
