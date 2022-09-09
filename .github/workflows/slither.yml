@@ -7,24 +7,20 @@ on:
     branches: [master]
 
 jobs:
-  analyze:
+  main_job:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      security-events: write
+    name: Solidity Security 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Run Slither
-        uses: crytic/slither-action@v0.1.1
-        continue-on-error: true
-        id: slither
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Slither Static Analysis
+        uses: luisfontes19/slither-static-analysis-action@v0.3.2
         with:
-          node-version: 16
-          sarif: results.sarif
-
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: ${{ steps.slither.outputs.sarif }}
+          slither-version: '0.6.13'
+          run-npm-install: true
+          high-threshold: 1
+          medium-threshold: 1
+          low-threshold: 1
+          optimization-threshold: 1
+          informative-threshold: 10
+          projectPath: "."
