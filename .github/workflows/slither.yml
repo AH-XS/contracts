@@ -7,20 +7,19 @@ on:
     branches: [master]
 
 jobs:
-  main_job:
+  analyze:
     runs-on: ubuntu-latest
-    name: Solidity Security 
+    permissions:
+      contents: write
+      security-events: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Slither Static Analysis
-        uses: luisfontes19/slither-static-analysis-action@v0.3.2
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Slither
+        uses: crytic/slither-action@v0.1.1
+        continue-on-error: true
+        id: slither
         with:
-          slither-version: '0.6.13'
-          run-npm-install: true
-          high-threshold: 1
-          medium-threshold: 1
-          low-threshold: 1
-          optimization-threshold: 1
-          informative-threshold: 10
-          projectPath: "."
+          node-version: 16
+          sarif: results.sarif
