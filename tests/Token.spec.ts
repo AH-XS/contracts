@@ -43,28 +43,6 @@ describe("ERC20 Token", () => {
     expect(balance).to.equal(0);
   });
 
-  it("Should only allow deployer to mint/burn", async () => {
-    // List protected functions.
-    let userToken = token.connect(user);
-    const ownerFunctions = [
-      () => userToken.mint(user.address, "1"),
-      () => userToken.burn(user.address, "1")
-    ];
-    // Assert that all protected functions revert when called from an user.
-    for (let ownerFunction of ownerFunctions) {
-      try {
-        await expect(ownerFunction()).to.be.revertedWith(
-          "Ownable: caller is not the owner"
-        );
-      } catch (error) {
-        // the solidity-coverage plugin is not smart enough to run the
-        // "revertedWith" unit test, so we account for that here.
-        if (!`${error}`.includes("sender doesn't have enough funds to send tx"))
-          throw error;
-      }
-    }
-  });
-
   it("Should emit a transfer event", async () => {
     const deployerAddress = await deployer.getAddress();
     // Mint & transfer 1 wei.
