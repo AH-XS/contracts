@@ -16,7 +16,6 @@ import "hardhat-gas-reporter";
 const defaultKey =
   "0000000000000000000000000000000000000000000000000000000000000001";
 const defaultRpcUrl = "https://localhost:8545";
-const defaultEtherBalance = "100000000";
 
 export default {
   gasReporter: {
@@ -56,7 +55,7 @@ export default {
   solidity: {
     compilers: [
       {
-        version: "0.8.14",
+        version: "0.8.9",
         settings: {
           optimizer: {
             enabled: false,

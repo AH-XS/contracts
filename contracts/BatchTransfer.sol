@@ -6,7 +6,6 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "hardhat/console.sol";
 
 contract BatchTransfer is Initializable, UUPSUpgradeable, OwnableUpgradeable {
     using SafeERC20Upgradeable for ERC20Upgradeable;
@@ -122,6 +121,7 @@ contract BatchTransfer is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
     function withdrawToken(address _token) external onlyOwner {
         require(_token != address(0), "Token address can not be 0");
+        require(_token == token, "Token address is not set");
         uint256 value = ERC20Upgradeable(_token).balanceOf(address(this));
         require(value > 0, "Insufficient balance");
         ERC20Upgradeable(_token).transfer(msg.sender, value);

@@ -55,6 +55,68 @@ describe("Batch transfer", () => {
     expect(ethBalance).to.equal(ethers.utils.parseEther("100"));
   });
 
+  it("Should not transfer if recipients length no equal to value batch", async () => {
+    const userAddress = await user.getAddress();
+    const user2Address = await user2.getAddress();
+    const user3Address = await user3.getAddress();
+    const user4Address = await user4.getAddress();
+
+    await expect(
+      batchTransfer.batchTransferToken(
+        [userAddress, user2Address, user3Address, user4Address],
+        [
+          ethers.utils.parseEther("1000"),
+          ethers.utils.parseEther("1000"),
+          ethers.utils.parseEther("1000")
+        ],
+        token.address
+      )
+    ).to.revertedWith("Value and recipient lists are not the same length");
+
+    await expect(
+      batchTransfer.batchTransfer(
+        [userAddress, user2Address, user3Address, user4Address],
+        [
+          ethers.utils.parseEther("10"),
+          ethers.utils.parseEther("10"),
+          ethers.utils.parseEther("10")
+        ]
+      )
+    ).to.revertedWith("Value and recipient lists are not the same length");
+  });
+
+  it("Should not transfer if Insufficient balance", async () => {
+    const userAddress = await user.getAddress();
+    const user2Address = await user2.getAddress();
+    const user3Address = await user3.getAddress();
+    const user4Address = await user4.getAddress();
+
+    await expect(
+      batchTransfer.batchTransferToken(
+        [userAddress, user2Address, user3Address, user4Address],
+        [
+          ethers.utils.parseEther("10000"),
+          ethers.utils.parseEther("10000"),
+          ethers.utils.parseEther("10000"),
+          ethers.utils.parseEther("10000")
+        ],
+        token.address
+      )
+    ).to.revertedWith("Insufficient balance");
+
+    await expect(
+      batchTransfer.batchTransfer(
+        [userAddress, user2Address, user3Address, user4Address],
+        [
+          ethers.utils.parseEther("100"),
+          ethers.utils.parseEther("100"),
+          ethers.utils.parseEther("100"),
+          ethers.utils.parseEther("100")
+        ]
+      )
+    ).to.revertedWith("Insufficient balance");
+  });
+
   it("Should batch transfer token to users", async () => {
     const userAddress = await user.getAddress();
     const user2Address = await user2.getAddress();
@@ -129,9 +191,21 @@ describe("Batch transfer", () => {
     );
 
     expect(contractEthBalance).to.equal(ethers.utils.parseEther("0"));
+
+    await expect(batchTransfer.withdrawEth()).to.revertedWith(
+      "Insufficient balance"
+    );
   });
 
   it("Should withdraw token from contract", async () => {
+    await expect(
+      batchTransfer.withdrawToken(ethers.constants.AddressZero)
+    ).to.revertedWith("Token address can not be 0");
+
+    await expect(
+      batchTransfer.withdrawToken(tokenUpgradeable.address)
+    ).to.revertedWith("Token address is not set");
+
     const tokenBalance = await token.balanceOf(batchTransfer.address);
     expect(tokenBalance).to.equal(ethers.utils.parseEther("6000"));
 
@@ -139,6 +213,10 @@ describe("Batch transfer", () => {
     const tokenContractBalance = await token.balanceOf(batchTransfer.address);
 
     expect(tokenContractBalance).to.equal(ethers.utils.parseEther("0"));
+
+    await expect(batchTransfer.withdrawToken(token.address)).to.revertedWith(
+      "Insufficient balance"
+    );
   });
 
   it("Should not set same operator or operator address should not be address zero", async () => {
@@ -150,7 +228,9 @@ describe("Batch transfer", () => {
       batchTransfer.setOperator(await deployer.getAddress())
     ).to.be.revertedWith("setProperty: Operator cannot be the same");
 
-    await batchTransfer.setOperator(await operator.getAddress());
+    await expect(batchTransfer.setOperator(await operator.getAddress()))
+      .to.emit(batchTransfer, "NewOperator")
+      .withArgs(await operator.getAddress());
 
     expect(await batchTransfer.transferOperator()).to.equal(
       await operator.getAddress()
