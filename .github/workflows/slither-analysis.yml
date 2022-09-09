@@ -10,7 +10,7 @@ jobs:
         continue-on-error: true
         with:
           node-version: 16
-          target: contracts
+          target: ./contracts/
           sarif: results.sarif
 
       - name: Upload SARIF file
