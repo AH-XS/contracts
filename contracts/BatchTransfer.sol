@@ -27,7 +27,7 @@ contract BatchTransfer is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         _;
     }
 
-    function initialize() public initializer {
+    function initialize() public initializer onlyOwner {
         __Ownable_init();
         __UUPSUpgradeable_init();
         transferOperator = msg.sender;
@@ -65,7 +65,11 @@ contract BatchTransfer is Initializable, UUPSUpgradeable, OwnableUpgradeable {
             "Insufficient balance"
         );
         for (uint256 i = 0; i < _recipients.length; i++) {
-            ERC20Upgradeable(token).transfer(_recipients[i], _value[i]);
+            ERC20Upgradeable(token).safeTransferFrom(
+                self,
+                _recipients[i],
+                _value[i]
+            );
         }
     }
 
@@ -124,7 +128,7 @@ contract BatchTransfer is Initializable, UUPSUpgradeable, OwnableUpgradeable {
         require(_token == token, "Token address is not set");
         uint256 value = ERC20Upgradeable(_token).balanceOf(address(this));
         require(value > 0, "Insufficient balance");
-        ERC20Upgradeable(_token).transfer(msg.sender, value);
+        ERC20Upgradeable(_token).safeTransferFrom(self, msg.sender, value);
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
