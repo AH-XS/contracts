@@ -27,7 +27,7 @@ export default {
   paths: {
     sources: "./contracts",
     cache: "./cache",
-    artifacts: "./build",
+    artifacts: "./artifacts",
     tests: "./tests"
   },
   networks: {
@@ -55,7 +55,7 @@ export default {
   solidity: {
     compilers: [
       {
-        version: "0.8.9",
+        version: "0.8.17",
         settings: {
           optimizer: {
             enabled: false,
